@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["bae@foraker.com"]
   spec.description   = %q{Enumerated types for ActiveRecord attributes}
   spec.summary       = %q{Enumerated types for ActiveRecord attributes}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/foraker/active_record_enumerated_type"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
