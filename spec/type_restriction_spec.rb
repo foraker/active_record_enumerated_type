@@ -3,16 +3,17 @@ require "spec_helper"
 class TestRecord
   include ActiveRecord::TypeRestriction
 
-  module InheritedAttributes
-    def status
-      @status
-    end
-
-    def status=(value)
-      @status = value
-    end
+  def write_attribute(attribute, value)
+    instance_variable_set("@#{attribute}", value)
   end
-  include InheritedAttributes
+
+  def read_attribute(attribute)
+    instance_variable_get("@#{attribute}")
+  end
+
+  def raw_status
+    @status
+  end
 
   restrict_type_of :status, to: Status
 end
@@ -53,6 +54,39 @@ describe TestRecord do
       expect {
         instance.status = :pending
       }.to raise_error(TypeError, error_message)
+    end
+  end
+
+  describe "custom serialization" do
+    let(:instance) { SerializingTestRecord.new }
+
+    class SerializableStatus
+      include EnumeratedType
+
+      declare :started, id: 1
+      declare :finished, id: 2
+
+      def self.deserialize(value)
+        detect { |type| type.id == value.to_i }
+      end
+
+      def serialize
+        id
+      end
+    end
+
+    class SerializingTestRecord < TestRecord
+      restrict_type_of :status, to: SerializableStatus
+    end
+
+    it "serializes" do
+      instance.status = SerializableStatus[:started]
+      expect(instance.raw_status).to eq(1)
+    end
+
+    it "deserializes" do
+      instance.status = SerializableStatus[:started]
+      expect(instance.status).to eq(SerializableStatus[:started])
     end
   end
 end

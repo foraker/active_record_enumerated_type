@@ -10,7 +10,7 @@ describe EnumeratedType do
       expect(Status[:finished].human).to eq "finito"
     end
 
-    it "defaulst to the name" do
+    it "defaults to the name" do
       expect(Status[:finished].human).to eq "Finished"
     end
   end

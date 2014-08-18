@@ -8,4 +8,10 @@ module EnumeratedType
   rescue I18n::MissingTranslationData
     to_s.titleize
   end
+
+  module ClassMethods
+    def deserialize(value)
+      self[value.to_sym]
+    end
+  end
 end

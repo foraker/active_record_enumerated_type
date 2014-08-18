@@ -9,12 +9,12 @@ module ActiveRecord
         type_class = options.fetch(:to)
 
         define_method(attribute) do
-          super() && type_class[super().to_sym]
+          read_attribute(attribute) && type_class.deserialize(read_attribute(attribute))
         end
 
         define_method(:"#{attribute}=") do |value|
           begin
-            super(value.presence && type_class.coerce(value).serialize)
+            write_attribute(attribute, value.presence && type_class.coerce(value).serialize)
           rescue ArgumentError
             valid_types = type_class.map { |type| "'#{type}'" }.to_sentence
             raise TypeError, "'#{value}' is not a valid type for #{attribute}. Valid types include #{valid_types}."

@@ -81,6 +81,32 @@ job.status.human
 # => 'started'
 ```
 
+### Custom serialization
+For performance reasons, it is sometimes advantageous to store enum values as integers. This can be achieved via custom serialization.
+
+```Ruby
+class JobStatus
+  include EnumeratedType
+
+  declare :started, id: 1
+  declare :finished, id: 2
+
+  def self.deserialize(value)
+    detect { |type| type.id == value.to_i }
+  end
+
+  def serialize
+    id
+  end
+end
+
+job = Job.new(status: :finished)
+# => #<Job status: 2>
+
+job.status
+#<JobStatus:finished>
+```
+
 ## Contributing
 
 1. Fork it
